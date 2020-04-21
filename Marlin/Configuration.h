@@ -486,9 +486,15 @@
                                   // is more than PID_FUNCTIONAL_RANGE then the PID will be shut off and the heater will be set to min/max.
 
   // von Andy: aus der alten MarlinTarantula
-  #define  DEFAULT_Kp 9.84
-  #define  DEFAULT_Ki 0.50
-  #define  DEFAULT_Kd 48.17
+  //#define  DEFAULT_Kp 9.84
+  //#define  DEFAULT_Ki 0.50
+  //#define  DEFAULT_Kd 48.17
+
+  // von Andy: neue Parameter aus "M303 E0 C8 S200"
+  #define DEFAULT_Kp 16.09
+  #define DEFAULT_Ki 1.05
+  #define DEFAULT_Kd 61.62
+
   // FIND YOUR OWN: "M303 E0 C8 S200" to run autotune on the hotend at 200 degreesC for 8 cycles.
   // More info here: http://reprap.org/wiki/PID_Tuning
 
@@ -528,9 +534,15 @@
   //#define PID_BED_DEBUG // Sends debug data to the serial port.
 
   // von Andy: aus der alten MarlinTarantula
-  #define  DEFAULT_bedKp 984.88
-  #define  DEFAULT_bedKi 193.91
-  #define  DEFAULT_bedKd 1250.55
+  //#define  DEFAULT_bedKp 984.88
+  //#define  DEFAULT_bedKi 193.91
+  //#define  DEFAULT_bedKd 1250.55
+
+  // von Andy: neue Parameter als Resultat von PID autotune "M303 E-1 C8 S60"
+  #define  DEFAULT_bedKp 45.63
+  #define  DEFAULT_bedKi 2.99
+  #define  DEFAULT_bedKd 463.54
+
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
   // More info here: http://reprap.org/wiki/PID_Tuning
 
@@ -1058,7 +1070,7 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false
-#define INVERT_Y_DIR true
+#define INVERT_Y_DIR false
 #define INVERT_Z_DIR false
 
 // @section extruder
@@ -1314,7 +1326,7 @@
  * Add a bed leveling sub-menu for ABL or MBL.
  * Include a guided procedure if manual probing is enabled.
  */
-//#define LCD_BED_LEVELING
+#define LCD_BED_LEVELING
 
 #if ENABLED(LCD_BED_LEVELING)
   #define MESH_EDIT_Z_STEP  0.025 // (mm) Step size while manually probing Z axis.
@@ -1773,7 +1785,8 @@
 //
 // Note: Usually sold with a white PCB.
 //
-//#define REPRAP_DISCOUNT_SMART_CONTROLLER
+// von Andy: steht bei mir sogar hinten drauf m-( aber rote Platine
+#define REPRAP_DISCOUNT_SMART_CONTROLLER
 
 //
 // Original RADDS LCD Display+Encoder+SDCardReader
