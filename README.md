@@ -1,3 +1,13 @@
+# Andys fork
+
+  - Tevo Tarantula (2018)
+  - MKS Base V1.4 with Heroic HR4982 stepper driver
+  - manual bed leveling
+  - SD Card support
+
+base of the config was https://github.com/MarlinFirmware/Configurations/tree/release-2.0.5/config/default
+It took me a while to realize that they differ from the default configs in https://github.com/MarlinFirmware/Marlin/tree/2.0.x/Marlin
+
 # Marlin 3D Printer Firmware
 
 ![GitHub](https://img.shields.io/github/license/marlinfirmware/marlin.svg)
