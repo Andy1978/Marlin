@@ -38,6 +38,11 @@
  */
 #define CONFIGURATION_H_VERSION 020005
 
+/*
+ * von Andy: einige Einstellungen anhand von
+ * https://github.com/Ultimaker/Cura/blob/master/resources/definitions/tevo_tarantula.def.json
+ */
+
 //===========================================================================
 //============================= Getting Started =============================
 //===========================================================================
@@ -739,7 +744,8 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+// von Andy: 25mm/s für den Extruder scheint zu wenig zu sein. Cura verwendet z.B. 30mm/s 
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 7, 50 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -780,13 +786,14 @@
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
-//#define CLASSIC_JERK
+#define CLASSIC_JERK
 
-// von Andy: JERKS von MarlinTarantula übernommen, allerdings oben deaktiviert.
+// von Andy: JERKS von MarlinTarantula übernommen. Default ist Junction Deviation
 // FIXME: Es gibt auch Stimmen die sagen CLASSIC_JERK wäre besser als Junction Deviation
 // https://www.reddit.com/r/3Dprinting/comments/dx8bdb/here_is_why_you_should_disable_junction_deviation/
 
 #if ENABLED(CLASSIC_JERK)
+  // von https://github.com/JimBrown/MarlinTarantula/blob/EasyConfig-2.0.x/Marlin/Configuration.h
   #define DEFAULT_XJERK 4.0
   #define DEFAULT_YJERK 7.0
   #define DEFAULT_ZJERK 0.2
