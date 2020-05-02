@@ -1,0 +1,8 @@
+
+
+die tevo_tarantula.def.json müsste man irgendwie in Cura rein bekommen
+
+angeblich geht das in .local/...
+https://github.com/Ultimaker/Cura/issues/847
+
+hat bei mir aber nicht geklappt

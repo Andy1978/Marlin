@@ -39,6 +39,11 @@
 #define CONFIGURATION_H
 #define CONFIGURATION_H_VERSION 010109
 
+/*
+ * von Andy: einige Einstellungen anhand von
+ * https://github.com/Ultimaker/Cura/blob/master/resources/definitions/tevo_tarantula.def.json
+ */
+
 //===========================================================================
 //============================= Getting Started =============================
 //===========================================================================
@@ -81,7 +86,7 @@
 // User-specified version info of this build to display in [Pronterface, etc] terminal window during
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
-#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(Andy, Tevo Tarantula)" // Who made the changes.
 #define SHOW_BOOTSCREEN
 #define STRING_SPLASH_LINE1 SHORT_BUILD_VERSION // will be shown during bootup in line 1
 #define STRING_SPLASH_LINE2 WEBSITE_URL         // will be shown during bootup in line 2
@@ -123,15 +128,19 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
-#define BAUDRATE 250000
+#define BAUDRATE 115200
 
 // Enable the Bluetooth serial interface on AT90USB devices
 //#define BLUETOOTH
 
 // The following define selects which electronics board you have.
 // Please choose the name from boards.h that matches your setup
+// von Andy: Auf dem Board steht "MKS Base V1.4" (in boards.h: BOARD_MKS_13 => MKS v1.3 or 1.4 (maybe higher))
+// allerdings sind HR4982 Treiber verbaut. Also BOARD_MKS_BASE_HEROIC ?
+// FIXME: Wenn man pins_MKS_BASE_HEROIC.h ließt, kann es bei mir durchaus Sinn machen BOARD_MKS_BASE_HEROIC zu verwenden (microstepping)
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_14_EFB
+  #define MOTHERBOARD BOARD_MKS_BASE_HEROIC
+  //#define MOTHERBOARD BOARD_RAMPS_14_EFB
 #endif
 
 // Optional custom name for your RepStrap or other custom machine
@@ -149,7 +158,7 @@
 #define EXTRUDERS 1
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
-#define DEFAULT_NOMINAL_FILAMENT_DIA 3.0
+#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
 
 // For Cyclops or any "multi-extruder" that shares a single nozzle.
 //#define SINGLENOZZLE
@@ -315,7 +324,7 @@
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
 #define TEMP_SENSOR_4 0
-#define TEMP_SENSOR_BED 0
+#define TEMP_SENSOR_BED 1
 #define TEMP_SENSOR_CHAMBER 0
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
@@ -355,7 +364,8 @@
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
 #define HEATER_4_MAXTEMP 275
-#define BED_MAXTEMP 150
+// von Andy: aus der Tevo Tarantula Pro Config übernommen
+#define BED_MAXTEMP      140
 
 //===========================================================================
 //============================= PID Settings ================================
@@ -379,20 +389,18 @@
 
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
-  // Ultimaker
-  #define DEFAULT_Kp 22.2
-  #define DEFAULT_Ki 1.08
-  #define DEFAULT_Kd 114
+  // von Andy: aus der alten MarlinTarantula
+  //#define  DEFAULT_Kp 9.84
+  //#define  DEFAULT_Ki 0.50
+  //#define  DEFAULT_Kd 48.17
 
-  // MakerGear
-  //#define DEFAULT_Kp 7.0
-  //#define DEFAULT_Ki 0.1
-  //#define DEFAULT_Kd 12
+  // von Andy: neue Parameter aus "M303 E0 C8 S200"
+  #define DEFAULT_Kp 16.09
+  #define DEFAULT_Ki 1.05
+  #define DEFAULT_Kd 61.62
 
-  // Mendel Parts V9 on 12V
-  //#define DEFAULT_Kp 63.0
-  //#define DEFAULT_Ki 2.25
-  //#define DEFAULT_Kd 440
+  // FIND YOUR OWN: "M303 E0 C8 S200" to run autotune on the hotend at 200 degreesC for 8 cycles.
+  // More info here: http://reprap.org/wiki/PID_Tuning
 
 #endif // PIDTEMP
 
@@ -413,6 +421,8 @@
  * heater. If your configuration is significantly different than this and you don't understand
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
+// von Andy: der 2 Punkt Regler (also PIDTEMPBED deaktiviert) funktioniert gut, 2°C Überschwinger
+// in der Sprungantwort auf 60°C. Ich lasse PID daher vorerst weg
 //#define PIDTEMPBED
 
 //#define BED_LIMIT_SWITCHING
@@ -425,21 +435,20 @@
  */
 #define MAX_BED_POWER 255 // limits duty cycle to bed; 255=full current
 
+// von Andy: Achtung, oben noch deaktiviert
 #if ENABLED(PIDTEMPBED)
 
   //#define PID_BED_DEBUG // Sends debug data to the serial port.
 
-  //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
-  //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 10.00
-  #define DEFAULT_bedKi .023
-  #define DEFAULT_bedKd 305.4
+  // von Andy: aus der alten MarlinTarantula
+  //#define  DEFAULT_bedKp 984.88
+  //#define  DEFAULT_bedKi 193.91
+  //#define  DEFAULT_bedKd 1250.55
 
-  //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
-  //from pidautotune
-  //#define DEFAULT_bedKp 97.1
-  //#define DEFAULT_bedKi 1.41
-  //#define DEFAULT_bedKd 1675.16
+  // von Andy: neue Parameter als Resultat von PID autotune "M303 E-1 C8 S60"
+  #define  DEFAULT_bedKp 45.63
+  #define  DEFAULT_bedKi 2.99
+  #define  DEFAULT_bedKd 463.54
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -461,7 +470,8 @@
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 200
+// von Andy, alte config
+#define EXTRUDE_MAXLENGTH 650
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -528,9 +538,9 @@
 #endif
 
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
-#define X_MIN_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define Y_MIN_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define Z_MIN_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
+#define X_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
+#define Y_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
 #define X_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
 #define Y_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
 #define Z_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
@@ -608,14 +618,16 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500 }
+// von Andy: von MarlinTarantula übernommen
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 1600, 100 }
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+// von Andy: 25mm/s für den Extruder scheint zu wenig zu sein. Cura verwendet z.B. 30mm/s 
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 7, 50 }
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
@@ -633,22 +645,24 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
+// von Andy: von MarlinTarantula übernommen
+#define DEFAULT_ACCELERATION          1000    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  2000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
- * Default Jerk (mm/s)
+ * Default Jerk limits (mm/s)
  * Override with M205 X Y Z E
  *
  * "Jerk" specifies the minimum speed change that requires acceleration.
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
-#define DEFAULT_XJERK                 10.0
-#define DEFAULT_YJERK                 10.0
-#define DEFAULT_ZJERK                  0.3
-#define DEFAULT_EJERK                  5.0
+// von Andy: JERKS von MarlinTarantula übernommen.
+#define DEFAULT_XJERK                 4.0
+#define DEFAULT_YJERK                 7.0
+#define DEFAULT_ZJERK                 0.2
+#define DEFAULT_EJERK                 5.0
 
 /**
  * S-Curve Acceleration
@@ -658,6 +672,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
+// andy FIXME: ist beim Tevo Tarantula Pro aktiv: testen!
 //#define S_CURVE_ACCELERATION
 
 //===========================================================================
@@ -846,7 +861,7 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false
-#define INVERT_Y_DIR true
+#define INVERT_Y_DIR false
 #define INVERT_Z_DIR false
 
 // @section extruder
@@ -974,13 +989,15 @@
 //#define AUTO_BED_LEVELING_LINEAR
 //#define AUTO_BED_LEVELING_BILINEAR
 //#define AUTO_BED_LEVELING_UBL
-//#define MESH_BED_LEVELING
+// von Andy
+#define MESH_BED_LEVELING
 
 /**
  * Normally G28 leaves leveling disabled on completion. Enable
  * this option to have G28 restore the prior leveling state.
  */
-//#define RESTORE_LEVELING_AFTER_G28
+// von Andy
+#define RESTORE_LEVELING_AFTER_G28
 
 /**
  * Enable detailed logging of G28, G29, M48, etc.
@@ -1071,6 +1088,7 @@
   //=================================== Mesh ==================================
   //===========================================================================
 
+  // von Andy: so zwischen 10 und 30mm ist gut
   #define MESH_INSET 10          // Set Mesh bounds as an inset region of the bed
   #define GRID_MAX_POINTS_X 3    // Don't use more than 7 points per axis, implementation limited.
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
@@ -1096,7 +1114,8 @@
  * Add a bed leveling sub-menu for ABL or MBL.
  * Include a guided procedure if manual probing is enabled.
  */
-//#define LCD_BED_LEVELING
+// von Andy
+#define LCD_BED_LEVELING
 
 #if ENABLED(LCD_BED_LEVELING)
   #define MBL_Z_STEP 0.025    // Step size while manually probing Z axis.
@@ -1104,11 +1123,12 @@
 #endif
 
 // Add a menu item to move between bed corners for manual bed adjustment
-//#define LEVEL_BED_CORNERS
+// von Andy
+#define LEVEL_BED_CORNERS
 
 #if ENABLED(LEVEL_BED_CORNERS)
-  #define LEVEL_CORNERS_INSET 30    // (mm) An inset for corner leveling
-  #define LEVEL_CORNERS_Z_HOP  4.0  // (mm) Move nozzle up before moving between corners
+  #define LEVEL_CORNERS_INSET 20    // (mm) An inset for corner leveling
+  #define LEVEL_CORNERS_Z_HOP  2.0  // (mm) Move nozzle up before moving between corners
   //#define LEVEL_CENTER_TOO        // Move to the center after the last corner
 #endif
 
@@ -1221,7 +1241,8 @@
 // M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 // M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
 //
-//#define EEPROM_SETTINGS // Enable for M500 and M501 commands
+// von Andy
+#define EEPROM_SETTINGS // Enable for M500 and M501 commands
 //#define DISABLE_M503    // Saves ~2700 bytes of PROGMEM. Disable for release!
 #define EEPROM_CHITCHAT   // Give feedback on EEPROM commands. Disable to save PROGMEM.
 
@@ -1253,8 +1274,8 @@
 // @section temperature
 
 // Preheat Constants
-#define PREHEAT_1_TEMP_HOTEND 180
-#define PREHEAT_1_TEMP_BED     70
+#define PREHEAT_1_TEMP_HOTEND 200
+#define PREHEAT_1_TEMP_BED     60
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
 #define PREHEAT_2_TEMP_HOTEND 240
@@ -1272,11 +1293,11 @@
  *    P1  Raise the nozzle always to Z-park height.
  *    P2  Raise the nozzle by Z-park amount, limited to Z_MAX_POS.
  */
-//#define NOZZLE_PARK_FEATURE
+#define NOZZLE_PARK_FEATURE
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z }
-  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
+  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 30 }
   #define NOZZLE_PARK_XY_FEEDRATE 100   // X and Y axes feedrate in mm/s (also used for delta printers Z axis)
   #define NOZZLE_PARK_Z_FEEDRATE 5      // Z axis feedrate in mm/s (not used for delta printers)
 #endif
@@ -1424,7 +1445,7 @@
  * you must uncomment the following option or it won't work.
  *
  */
-//#define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: SPI SPEED
@@ -1458,13 +1479,15 @@
 // This option overrides the default number of encoder pulses needed to
 // produce one step. Should be increased for high-resolution encoders.
 //
-//#define ENCODER_PULSES_PER_STEP 4
+// von Andy: von MarlinTarantula übernommen
+#define ENCODER_PULSES_PER_STEP 4
 
 //
 // Use this option to override the number of step signals required to
 // move between next/prev menu items.
 //
-//#define ENCODER_STEPS_PER_MENU_ITEM 1
+// von Andy: von MarlinTarantula übernommen
+#define ENCODER_STEPS_PER_MENU_ITEM 1
 
 /**
  * Encoder Direction Options
@@ -1481,7 +1504,8 @@
 //
 //  Set this option if CLOCKWISE causes values to DECREASE
 //
-//#define REVERSE_ENCODER_DIRECTION
+// von Andy
+#define REVERSE_ENCODER_DIRECTION
 
 //
 // This option reverses the encoder direction for navigating LCD menus.
@@ -1496,7 +1520,8 @@
 //
 // Add individual axis homing items (Home X, Home Y, and Home Z) to the LCD menu.
 //
-//#define INDIVIDUAL_AXIS_HOMING_MENU
+// von Andy von MarlinTarantula übernommen
+#define INDIVIDUAL_AXIS_HOMING_MENU
 
 //
 // SPEAKER/BUZZER
@@ -1527,7 +1552,8 @@
 //
 // Note: Usually sold with a white PCB.
 //
-//#define REPRAP_DISCOUNT_SMART_CONTROLLER
+// von Andy: steht bei mir sogar hinten drauf m-( aber rote Platine
+#define REPRAP_DISCOUNT_SMART_CONTROLLER
 
 //
 // ULTIMAKER Controller.
